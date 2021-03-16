@@ -1,0 +1,29 @@
+{
+  "name": "kickstarter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "dev": "next dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@portis/web3": "^3.0.8",
+    "@truffle/hdwallet-provider": "^1.2.2",
+    "fs-extra": "^8.1.0",
+    "ganache-cli": "^6.12.2",
+    "identicon.js": "^2.3.3",
+    "ipfs-http-client": "^33.1.1",
+    "mocha": "^8.3.0",
+    "next": "^10.0.7",
+    "next-routes": "^1.4.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.0.3",
+    "solc": "^0.5.15",
+    "web3": "^1.2.4"
+  }
+}
