@@ -10,6 +10,7 @@ const provider = new HDWalletProvider(
 const web3 = new Web3(provider);
 
 const compiledFactory = require("./build/CampaignFactory.json");
+const compiledVideo = require("./build/DVideo.json")
 
 const deploy = async () => {
     const accounts = await web3.eth.getAccounts();
@@ -19,7 +20,14 @@ const deploy = async () => {
         .deploy({ data: "0x" + compiledFactory.evm.bytecode.object })
         .send({ from: accounts[0] });
 
+    const videoResult = await new web3.eth.Contract(compiledVideo.abi)
+        .deploy({ data: "0x" + compiledFactory.evm.bytecode.object })
+        .send({ from: accounts[0] })
+
     console.log("Contract deployed to", result.options.address);
+    console.log("Video Contract deployed to", videoResult.options.address);
+
+    console.log("done")
 };
 
 deploy();

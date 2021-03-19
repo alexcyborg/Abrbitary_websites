@@ -9,8 +9,7 @@ contract CampaignFactory {
         string memory cropName,
         string memory email,
         string memory phone_no,
-        string memory location,
-        string memory videohash
+        string memory location
     ) public {
         Campaign newCampaign =
             new Campaign(
@@ -49,15 +48,6 @@ contract Campaign {
         address author;
     }
 
-    struct Video {
-        uint256 id;
-        string hash;
-        string title;
-        address author;
-    }
-
-    event VideoUploaded(uint256 id, string hash, string title, address author);
-
     address public manager;
     uint256 public minimumContribution;
     mapping(address => bool) public approvers;
@@ -65,9 +55,6 @@ contract Campaign {
     Request[] public requests;
 
     mapping(address => Farmer) public farmers;
-
-    uint256 public videoCount = 0;
-    mapping(uint256 => Video) public videos;
 
     modifier onlyManager() {
         require(
@@ -98,8 +85,6 @@ contract Campaign {
                 author: msg.sender
             });
         farmers[msg.sender] = newFarmer;
-
-        uploadVideo()
     }
 
     function contribute() public payable {
@@ -183,25 +168,51 @@ contract Campaign {
             uint256,
             uint256,
             uint256,
-            address
+            address,
+            string memory,
+            string memory,
+            string memory,
+            string memory,
+            string memory
         )
     {
+        Farmer storage newFarmer = farmers[msg.sender];
         return (
             minimumContribution,
             address(this).balance,
             requests.length,
             approversCount,
-            manager
+            manager,
+            newFarmer.fullName,
+            newFarmer.cropName,
+            newFarmer.email,
+            newFarmer.phone_no,
+            newFarmer.location
         );
     }
 
     function getRequestsCount() public view returns (uint256) {
         return requests.length;
     }
+}
+
+contract DVideo {
+    uint256 public videoCount = 0;
+    mapping(address => Video) public videos;
+
+    struct Video {
+        uint256 id;
+        string hash;
+        string title;
+        address author;
+    }
+
+    event VideoUploaded(uint256 id, string hash, string title, address author);
+
+    constructor() public {}
 
     function uploadVideo(string memory _videoHash, string memory _title)
         public
-        onlyManager
     {
         // Make sure the video hash exists
         require(bytes(_videoHash).length > 0);
@@ -214,7 +225,7 @@ contract Campaign {
         videoCount++;
 
         // Add video to the contract
-        videos[videoCount] = Video(videoCount, _videoHash, _title, msg.sender);
+        videos[msg.sender] = Video(videoCount, _videoHash, _title, msg.sender);
         // Trigger an event
         emit VideoUploaded(videoCount, _videoHash, _title, msg.sender);
     }

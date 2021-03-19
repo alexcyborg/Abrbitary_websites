@@ -4,12 +4,12 @@ import { Form, Button, Input, Message } from "semantic-ui-react";
 import Layout from "../../components/Layout";
 import factory from "../../ethereum/factory";
 import Campaign from "../../ethereum/campaign";
+import dvideo from "../../ethereum/dvideo"
 import web3 from "../../ethereum/web3";
 
 //Declare IPFS
 const ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }) // leaving out the arguments will default to these values
-
 
 class CampaignNew extends Component {
     constructor(props) {
@@ -23,8 +23,7 @@ class CampaignNew extends Component {
             minimumContribution: "",
             errorMessage: "",
             loading: false,
-            buffer: null,
-            videos: []
+            buffer: null
         };
     }
 
@@ -40,21 +39,18 @@ class CampaignNew extends Component {
         }
     }
 
-    uploadVideo = title => {
+    uploadVideo = (title, account) => {
         console.log("Submitting file to IPFS...")
 
         //adding file to the IPFS
-        ipfs.add(this.state.buffer, (error, result) => {
+        ipfs.add(this.state.buffer, async (error, result) => {
             console.log('IPFS result', result)
             if (error) {
                 console.error(error)
                 return
             }
 
-            this.setState({ loading: true })
-            this.state.dvideo.methods.uploadVideo(result[0].hash, title).send({ from: accounts[0] }).on('transactionHash', (hash) => {
-                this.setState({ loading: false })
-            })
+            await dvideo.methods.uploadVideo(result[0].hash, title).send({ from: account }).call()
         })
     }
 
@@ -73,7 +69,7 @@ class CampaignNew extends Component {
                     from: accounts[0]
                 });
 
-            this.uploadVideo(cropName);
+            this.uploadVideo(cropName, accounts[0]);
 
             Router.push("/");
         } catch (error) {
